@@ -155,6 +155,24 @@ VOID GET_NTDLL_FUN(ULONG SymbolHash, PNTDLL_FUNCTION SymbolData) {
                 SymbolData->SyscallInstruction = SymbolData->SyscallStub + index;
                 break;
         }
+        for (UINT index = 0, start = 0, random = rand() % NTDLL_CONFIG.NumberOfNames; index < NTDLL_CONFIG.NumberOfNames; index++, start++) {
+                if ((start + random) == NTDLL_CONFIG.NumberOfNames)
+                        start = 0 - random;
+
+                USHORT SLOT     = *(USHORT *) (NTDLL_CONFIG.ArrayOfOrdinals + ((start + random) * 2));
+                ULONG_PTR START = (NTDLL_CONFIG.pModule + *(ULONG*) (NTDLL_CONFIG.ArrayOfAddresses + (SLOT * 4)));
+
+                ULONG_PTR RETURN;
+                CHAR AMOUNT;
+
+                if (!IDEAL(START, &RETURN, &AMOUNT)) {
+                        continue;
+                }
+
+                SymbolData->Landing = RETURN;
+                SymbolData->Size    = AMOUNT;
+                break;
+        }
 }
 ```
 
@@ -178,23 +196,6 @@ BOOL IDEAL(ULONG_PTR START, ULONG_PTR *RETURN, CHAR *SIZE) {
                 }
         }
         return FALSE;
-}
-
-// Parse over all functions, and check if it contains an ideal return.
-VOID FIND_DUMMY_RETURN(PNTDLL_FUNCTION SymbolData) {
-        UINT random     = rand() % NTDLL_CONFIG.NumberOfNames;
-        UINT start      = 0;
-
-        for (UINT index = 0, start = 0; index < NTDLL_CONFIG.NumberOfNames; index++, start++) {
-                if ((start + random) == NTDLL_CONFIG.NumberOfNames)
-                        start = 0 - random;
-                
-                USHORT SLOT     = *(USHORT *) (NTDLL_CONFIG.ArrayOfOrdinals + ((start + random) * 2));
-                ULONG_PTR START = (NTDLL_CONFIG.pModule + *(ULONG *) (NTDLL_CONFIG.ArrayOfAddresses + (SLOT * 4)));
-                
-                if (IDEAL(START, &SymbolData->DummyReturnPointer, &SymbolData->StackSize))
-                        break;
-        }
 }
 ```
 
