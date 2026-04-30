@@ -217,3 +217,9 @@ STUB:
         MOV     EAX,    DWORD   [REL SYSTEM_SERVICE_NUMBER]
         JMP     QWORD   [REL SYSCALL_ADDRESS]
 ```
+
+## References.
+
+- Original HellsGate https://github.com/am0nsec/HellsGate/tree/master
+- Original HalosGate https://blog.sektor7.net/#!res/2021/halosgate.md
+- DLL Proxying https://0xdarkvortex.dev/proxying-dll-loads-for-hiding-etwti-stack-tracing
