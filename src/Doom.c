@@ -30,8 +30,8 @@ BOOL IDEAL(ULONG_PTR START, ULONG_PTR *RETURN, CHAR *SIZE) {
                 UCHAR AMOUNT            = *(UCHAR *)     (START + index + 3);
 
                 if (
-                        (((SEARCH & 0x000000FF00FFFFFF) == 0x000000C300C48348) || 
-                        ((SEARCH & 0xFFFFFFFF00FFFFFF) == 0xC300000000C48148)) && 
+                        (((SEARCH & 0x000000FF00FFFFFF) == 0x000000C300C48348) ||
+                        ((SEARCH & 0xFFFFFFFF00FFFFFF) == 0xC300000000C48148)) &&
                         (AMOUNT >= 0x58)
                 ) {
                         *RETURN         = START + index;
@@ -40,24 +40,6 @@ BOOL IDEAL(ULONG_PTR START, ULONG_PTR *RETURN, CHAR *SIZE) {
                 }
         }
         return FALSE;
-}
-
-VOID FIND_LANDING(PNTDLL_FUNCTION SymbolData) {
-        UINT random     = rand() % NTDLL_CONFIG.NumberOfNames;
-        UINT start      = 0;
-
-        for (UINT index = 0, start = 0; index < NTDLL_CONFIG.NumberOfNames; index++, start++) {
-                if ((start + random) == NTDLL_CONFIG.NumberOfNames)
-                        start = 0 - random;
-                
-                PUCHAR NAME     = (PUCHAR) (NTDLL_CONFIG.pModule + *(ULONG *) (NTDLL_CONFIG.ArrayOfNames + ((start + random) * 4)));
-                USHORT SLOT     = *(USHORT *) (NTDLL_CONFIG.ArrayOfOrdinals + ((start + random) * 2));
-                ULONG_PTR START = (NTDLL_CONFIG.pModule + *(ULONG *) (NTDLL_CONFIG.ArrayOfAddresses + (SLOT * 4)));
-                
-                if (IDEAL(START, &SymbolData->Landing, &SymbolData->Size)) {
-                        break;
-                }
-        }
 }
 
 ULONG ROR7_32(PCHAR SymbolName) {
@@ -103,5 +85,22 @@ VOID GET_NTDLL_FUN(ULONG SymbolHash, PNTDLL_FUNCTION SymbolData) {
         if (!SymbolData->SyscallInstruction)
                 SymbolData->SyscallInstruction = SymbolData->SyscallStub;
 
-        FIND_LANDING(SymbolData);
+        for (UINT index = 0, start = 0, random = rand() % NTDLL_CONFIG.NumberOfNames; index < NTDLL_CONFIG.NumberOfNames; index++, start++) {
+                if ((start + random) == NTDLL_CONFIG.NumberOfNames)
+                        start = 0 - random;
+
+                USHORT SLOT     = *(USHORT *) (NTDLL_CONFIG.ArrayOfOrdinals + ((start + random) * 2));
+                ULONG_PTR START = (NTDLL_CONFIG.pModule + *(ULONG*) (NTDLL_CONFIG.ArrayOfAddresses + (SLOT * 4)));
+
+                ULONG_PTR RETURN;
+                CHAR AMOUNT;
+
+                if (!IDEAL(START, &RETURN, &AMOUNT)) {
+                        continue;
+                }
+
+                SymbolData->Landing = RETURN;
+                SymbolData->Size    = AMOUNT;
+                break;
+        }
 }

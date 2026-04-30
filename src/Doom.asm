@@ -21,13 +21,13 @@ SET_SYSCALL_ASM:
         RET
 
 RUN_SYSCALL_ASM:
+        MOV     R10,    RCX
         CALL    GET_STACK
         CMP     RAX,    0
         JZ      STUB
         SUB     RSP,    RAX
         MOV     RAX,    QWORD   [REL LANDING_ADDRESS]
         PUSH    RAX
-        MOV     R10,    RCX
         XOR     RCX,    RCX
         MOV     RCX,    0x30
 COPY:

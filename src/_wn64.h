@@ -124,11 +124,11 @@ typedef struct _CLIENT_ID {
 } CLIENT_ID, * PCLIENT_ID;
 
 #ifndef __readgsqword
-#define __readgsqword(OFF) ({ULONGLONG VAL; __asm__ ("mov %%gs:%c1, %0" : "=r" (VAL) : "i" (OFF)); VAL;})
+#define __readgsqword(OFF) ({ULONGLONG VAL; __asm__ volatile ("mov %%gs:%c1, %0" : "=r" (VAL) : "i" (OFF)); VAL;})
 #endif
 
 #ifndef rand
-#define rand() ({UINT LO, HI; __asm__ ("rdtsc" : "=a" (LO), "=d" (HI)); LO ^ HI;})
+#define rand() ({UINT LO, HI; __asm__ volatile ("rdtsc" : "=a" (LO), "=d" (HI)); (LO ^ HI);})
 #endif
 
 #endif // !_W64_H

