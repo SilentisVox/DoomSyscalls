@@ -15,6 +15,8 @@ The combination of both should bypass any userland hooks & kernel level checks.
 Do not use this on machines you do not have permission to use.
 Do not use this to leverage and communicate with machines that you do not have authorization to use.
 
+###### Special thank you to https://github.com/WaffleSec
+
 ## Preamble.
 
 Indirect syscalls is a method of performing syscalls to bypass **Endpoint Detection & Response** (EDR).
